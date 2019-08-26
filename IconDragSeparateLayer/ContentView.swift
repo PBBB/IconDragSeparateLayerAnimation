@@ -25,16 +25,12 @@ struct ContentView: View {
     }
     
     @GestureState var dragState = DragState.inactive
-//    @State var viewState = CGSize.zero
     
     var body: some View {
         
         let dragGeture = DragGesture()
             .updating($dragState) { (value, state, transaction) in
                 state = .dragging(translation: value.translation)
-        }
-        .onEnded { value in
-//            self.viewState = .zero
         }
         
         var animationDuration: Double {
@@ -46,21 +42,32 @@ struct ContentView: View {
             }
         }
         
+        var iconForegroundAnimation: Animation {
+            switch self.dragState {
+            case .inactive:
+                return Animation.easeInOut(duration: animationDuration)
+            default:
+                return Animation.interpolatingSpring(stiffness: 4000, damping: 50)
+            }
+        }
+        
         return ZStack {
-            Rectangle()
+            Circle()
                 .frame(width: 75.0, height: 75.0, alignment: .center)
                 .foregroundColor(.yellow)
-                .cornerRadius(10, antialiased: true)
-                
-            Circle()
-                .frame(width: 30.0 , height: 30.0, alignment: .center)
+//                .cornerRadius(10, antialiased: true)
+                .animation(.easeInOut(duration: animationDuration))
+            Rectangle()
+                .frame(width: 30.0, height: 30.0, alignment: .center)
                 .foregroundColor(.green)
+                .cornerRadius(4, antialiased: true)
+                .animation(iconForegroundAnimation)
         }
         .fixedSize()
         .frame(alignment: .center)
         .offset(dragState.translation)
         .gesture(dragGeture)
-        .animation(.easeInOut(duration: animationDuration))
+        
         
         
         
